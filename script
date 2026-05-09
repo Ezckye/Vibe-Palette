@@ -1,0 +1,47 @@
+const paletteContainer = document.getElementById('palette');
+const generateBtn = document.getElementById('generate-btn');
+
+function generatePalette() {
+    // Clear existing columns
+    paletteContainer.innerHTML = '';
+
+    // Create a cohesive scale using Chroma
+    // We pick two random colors and create a 5-step scale between them
+    const color1 = chroma.random();
+    const color2 = chroma.random();
+    const colors = chroma.scale([color1, color2]).mode('lch').colors(5);
+
+    colors.forEach(color => {
+        const col = document.createElement('div');
+        col.classList.add('color-column');
+        col.style.backgroundColor = color;
+
+        const hexText = document.createElement('h2');
+        hexText.innerText = color;
+        
+        // Adjust text color based on background brightness
+        hexText.style.color = chroma(color).luminance() > 0.5 ? 'black' : 'white';
+
+        col.appendChild(hexText);
+        
+        // Add click-to-copy functionality
+        col.addEventListener('click', () => {
+            navigator.clipboard.writeText(color);
+            alert(`Copied ${color} to clipboard!`);
+        });
+
+        paletteContainer.appendChild(col);
+    });
+}
+
+// Event Listeners
+generateBtn.addEventListener('click', generatePalette);
+
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+        generatePalette();
+    }
+});
+
+// Initial load
+generatePalette();
